@@ -4,6 +4,9 @@ import com.xiaodao.domain.User;
 import com.xiaodao.domain.UserExample;
 import java.util.List;
 
+/**
+ *  UserDao
+ */
 public interface UserDao {
 
     int deleteByPrimaryKey(Integer userId);
