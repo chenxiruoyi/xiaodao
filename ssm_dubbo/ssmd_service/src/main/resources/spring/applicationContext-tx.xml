@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--扫包-->
+    <context:component-scan base-package="com.xiaodao.userservice"></context:component-scan>
+
+    <!--事务-->
+    <!--1.配置事务管理平台-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--配置数据源 service操作事务 dao操作数据库 操作数据需要连接 连接在数据源中-->
+        <!--配置文件不在同一个包下 所有报错-->
+        <property name="dataSource"  ref="dataSource"></property>
+    </bean>
+
+    <!--2.增强-->
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <tx:method name="find*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="select*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="query*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--3.配置aop-->
+    <aop:config>
+        <aop:pointcut id="myPoint1" expression="execution(* com.xiaodao.userservice.*.*.*(..))"></aop:pointcut>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="myPoint1"></aop:advisor>
+    </aop:config>
+
+    <!-- 开启的支持 以防万一 -->
+    <tx:annotation-driven></tx:annotation-driven>
+
+</beans>

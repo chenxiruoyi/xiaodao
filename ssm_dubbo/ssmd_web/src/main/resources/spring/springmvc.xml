@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!--扫描 web下的所有的controller-->
+    <context:component-scan base-package="com.xiaodao.web"></context:component-scan>
+
+	<!--加载七牛云的properties文件-->
+	<!--<context:property-placeholder location="classpath:properties/qiniu.properties"></context:property-placeholder>-->
+
+	<!--配置日期转换-->
+	<!--<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="com.itheima.web.controller.converter.MyStringToDateConverter"></bean>
+			</list>
+		</property>
+	</bean>-->
+
+	<!--支持注解 各种解析器  一直因为它有错   conversionService  是上边的类-->
+	<!-- <mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven> -->
+
+	<!-- 支持注解解析  里边有各种解析器 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+
+	<!--视图解析器-->
+	<bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/pages/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!--配置异常的处理类-->
+	<!--<bean id="myException" class="com.xiaodao.web.controller.exception.MyException"></bean>-->
+
+	<!-- id 的值是固定的 文件上传-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大尺寸为 5MB -->
+		<property name="maxUploadSize">
+			<value>5242880</value>
+		</property>
+	</bean>
+
+	<!--切面注解-->
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+	<!-- 当前应用名称，用于注册中心计算应用间依赖关系，注意：消费者和提供者应用名不要一样 -->
+	<dubbo:application name="ssmd_web" />
+	<!-- 连接服务注册中心zookeeper ip为zookeeper所在服务器的ip地址-->
+	<dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+	<!-- 扫描的方式暴露接口  -->
+	<dubbo:annotation package="com.xiaodao.web" />
+
+</beans>
